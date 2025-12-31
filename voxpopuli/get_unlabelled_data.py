@@ -11,12 +11,10 @@ from collections import defaultdict
 from typing import Tuple, List
 
 from tqdm import tqdm
-from torchaudio.datasets.utils import download_url
 import torchaudio
 
 from voxpopuli import LANGUAGES, LANGUAGES_V2, DOWNLOAD_BASE_URL
-from voxpopuli.utils import multiprocess_run
-
+from voxpopuli.utils import download_url, multiprocess_run
 
 def _segment(item: Tuple[str, List[Tuple[str, float, float]], str]):
     in_path, segments, out_root = item
@@ -47,7 +45,7 @@ def get_metadata(out_root, subset):
     url = f"{DOWNLOAD_BASE_URL}/annotations/{filename}.tsv.gz"
     tsv_path = out_root / Path(url).name
     if not tsv_path.exists():
-        download_url(url, out_root.as_posix(), Path(url).name)
+        download_url(url, tsv_path.as_posix())
     if subset == '10k_sd':
         with gzip.open(tsv_path, mode="rt") as f:
             rows = [

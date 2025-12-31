@@ -6,12 +6,24 @@
 import argparse
 import os
 from pathlib import Path
+import tarfile
+import zipfile
 
 from tqdm import tqdm
-from torchaudio.datasets.utils import download_url, extract_archive
 
 from voxpopuli import LANGUAGES, LANGUAGES_V2, YEARS, DOWNLOAD_BASE_URL
+from voxpopuli.utils import download_url
 
+
+def extract_archive(path, dst):
+    if path.endswith(".zip"):
+        with zipfile.ZipFile(path) as zf:
+            zf.extractall(dst)
+    elif path.endswith((".tar.gz", ".tgz", ".tar")):
+        with tarfile.open(path) as tf:
+            tf.extractall(dst)
+    else:
+        raise ValueError(f"Unknown archive type: {path}")
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -57,8 +69,8 @@ def download(args):
     print(f"{len(url_list)} files to download...")
     for url in tqdm(url_list):
         tar_path = out_root / Path(url).name
-        download_url(url, out_root.as_posix(), Path(url).name)
-        extract_archive(tar_path.as_posix())
+        download_url(url, tar_path.as_posix())
+        extract_archive(tar_path.as_posix(), out_root.as_posix())
         os.remove(tar_path)
 
 
