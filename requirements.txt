@@ -1,5 +1,6 @@
 tqdm
 torchaudio
+torchcodec
 num2words
 edlib
 editdistance
